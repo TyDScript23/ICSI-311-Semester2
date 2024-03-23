@@ -13,12 +13,13 @@ public class Token {
         LESSTHANOREQUALTO,GREATERTHANOREQUALTO,NOTEQUALS,
 
         EQUALS, LESSTHAN, GREATERTHAN,LEFTPARENTHESIS,RIGHTPARENTHESIS, ADD, SUBTRACT, MULTIPLY, DIVIDE,
+        COMMA
     }
 
-    private String tokenvalue;
-    private int linenumber;
-    private int charposition;
-    private TokenType tokentype;
+    private final String tokenvalue;
+    private final int linenumber;
+    private final int charposition;
+    private final TokenType tokentype;
 
     //initialize a token without a value
     public Token(TokenType ttype, int linenum, int charpos)
@@ -44,8 +45,13 @@ public class Token {
         return tokentype;
     }
 
+    String getValue(){ return tokenvalue;}
     //return the value of the token in the form of a string
     public String toString() {
         return tokentype + "(" + tokenvalue + ")";
     }
+
+    //used for throwing errors in the Parser
+    int getLineNumber(){return linenumber;}
+    int getCharPosition(){return charposition;}
 }

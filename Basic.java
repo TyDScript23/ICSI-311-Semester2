@@ -1,6 +1,3 @@
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 /*
  * Name: Tyler Davis
  * Class: ICSI-311	Principles of Programming
@@ -19,12 +16,28 @@ import java.nio.file.Paths;
  *      - more than 1 argument should not be accepted form the command line
  *      - any character type that cannot currently be read should throw an error
  *      - more than two decimal points in one number should be counted as incorrect syntax
+ *      - unmatched parenthesis in a mathematical equation should not be allowed
+ *      - unhandled characters should not be present in a mathematical equation
+ *      - commas in print statements should have arguments following them
+ *      - print statements must be provided arguments
+ *      - each print statement's arguments should be separated by commas
+ *      - equal signs must be followed by an expression
+ *      - variables names called without the data type must be followed by an assignment
+ *      - commas in read statements should have arguments following them
+ *      - read statements must be provided arguments
+ *      - each print read's arguments should be separated by commas
+ *      - commas in data statements should have arguments following them
+ *      - data statements must be provided arguments
+ *      - each data statement's arguments should be separated by commas
+ *      - commas in input statements should have arguments following them
+ *      - input statements must be provided arguments
+ *      - each input statement's arguments should be separated by commas
+ *      - lone words, numbers, or strings should not be parsed
  */
 
 public class Basic {
     public static void main(String[] args) throws Exception {
 
-        String fileinput;
         String filename;
 
         if(args.length != 1)
@@ -33,10 +46,12 @@ public class Basic {
         }
         else{
             filename = args[0];
-            fileinput = new String(Files.readAllBytes(Paths.get(filename)));
 
-            Lexer lexinst = new Lexer(fileinput);
-            System.out.println(lexinst);
+            Lexer lexinst = new Lexer();
+            CodeHandler codehand = new CodeHandler(filename);
+            lexinst.Lex(codehand);
+            Parser par = new Parser(lexinst.getContent());
+            System.out.println(par);
         }
     }
 

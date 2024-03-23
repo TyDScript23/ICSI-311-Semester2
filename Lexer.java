@@ -2,14 +2,13 @@ import java.util.*;
 
 public class Lexer {
 
-    private CodeHandler codehand;
-    private LinkedList<Token> tokenlist;
+    private final LinkedList<Token> tokenlist = new LinkedList<>();
     private int linenumber;
     private int charposition;
 
-    private HashMap<String, Token.TokenType> keywordhashmap = new HashMap<>();
-    private HashMap<String, Token.TokenType> doublehashmap = new HashMap<>();
-    private HashMap<String, Token.TokenType> singlehashmap = new HashMap<>();
+    private final HashMap<String, Token.TokenType> keywordhashmap = new HashMap<>();
+    private final HashMap<String, Token.TokenType> doublehashmap = new HashMap<>();
+    private final HashMap<String, Token.TokenType> singlehashmap = new HashMap<>();
 
     /*
     * Default constructor for our Lexer object
@@ -20,13 +19,10 @@ public class Lexer {
     * - initializes the line number and character position to 0
     */
 
-    public Lexer(String filein) throws Exception {
+    public Lexer(){
         keywordHashmap();
         singleSymHashmap();
         doubleSymHashmap();
-
-        codehand = new CodeHandler(filein);
-        tokenlist = Lex(codehand);
         linenumber = 0;
         charposition = 0;
     }
@@ -54,9 +50,8 @@ public class Lexer {
     the character position is moved forward after each character is checked unless
     told otherwise
      */
-    LinkedList<Token> Lex(CodeHandler codeh) throws Exception {
-        LinkedList<Token> tokens = new LinkedList<>();
 
+    void Lex(CodeHandler codeh) throws Exception {
         linenumber = 1;
 
         while (!(codeh.IsDone())){
@@ -66,28 +61,26 @@ public class Lexer {
             if (next == ' ' || next == '\t');
             else if (next == '\n')
             {
-                tokens.add(new Token(Token.TokenType.ENDOFLINE, linenumber, charposition));
+                tokenlist.add(new Token(Token.TokenType.ENDOFLINE, linenumber, charposition));
                 charposition = 0;
                 ++linenumber;
             }
             else if (next == '\r');
             else if (Character.isLetter(next))
             {
-                tokens.add(ProcessWord(codeh));
+                tokenlist.add(ProcessWord(codeh));
             }
             else if (Character.isDigit(next))
             {
-                tokens.add(ProcessDigit(codeh));
+                tokenlist.add(ProcessDigit(codeh));
             }
             else if (next == '\"'){
-                tokens.add(HandleStringLiteral(codeh));
+                tokenlist.add(HandleStringLiteral(codeh));
             }
             else{
-                tokens.add(ProcessSymbol(codeh));
+                tokenlist.add(ProcessSymbol(codeh));
             }
         }
-
-        return tokens;
     }
 
     private void keywordHashmap() {
@@ -124,6 +117,7 @@ public class Lexer {
         singlehashmap.put("-", Token.TokenType.SUBTRACT);
         singlehashmap.put("*", Token.TokenType.MULTIPLY);
         singlehashmap.put("/", Token.TokenType.DIVIDE);
+        singlehashmap.put(",", Token.TokenType.COMMA);
     }
 
     /*
@@ -141,7 +135,7 @@ public class Lexer {
         int readpoint = 0;
         Token wordtoken;
 
-        while(Character.isLetter(codeh.Peek(readpoint))) {
+        while(Character.isLetter(codeh.Peek(readpoint)) || Character.isDigit(codeh.Peek(readpoint))) {
             readpoint++;
             charposition++;
         }
@@ -165,12 +159,7 @@ public class Lexer {
 
         wordvalue = codeh.PeekString(readpoint);
 
-        if(keywordhashmap.containsKey(wordvalue)) {
-            wordtoken = new Token(keywordhashmap.get(wordvalue), linenumber, charposition, wordvalue);
-        }
-        else {
-            wordtoken = new Token(Token.TokenType.WORD, linenumber, charposition, wordvalue);
-        }
+        wordtoken = new Token(keywordhashmap.getOrDefault(wordvalue, Token.TokenType.WORD), linenumber, charposition, wordvalue);
 
         codeh.Swallow(readpoint);
 
@@ -279,6 +268,10 @@ public class Lexer {
         }
 
         return symtoken;
+    }
+
+    public LinkedList<Token> getContent(){
+        return tokenlist;
     }
 
     //output error message with corresponding data in the form of a message printed to the terminal

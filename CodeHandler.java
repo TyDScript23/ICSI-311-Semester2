@@ -1,11 +1,20 @@
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 public class CodeHandler {
     private String filecontent;
     private int index;
 
+    CodeHandler() {
+        filecontent = " ";
+        index = 0;
+    }
+
     //initialization of the file content and index
-    CodeHandler(String filec) {
-       filecontent = filec + " ";
-       index = 0;
+    CodeHandler(String filen) throws IOException {
+        filecontent = new String(Files.readAllBytes(Paths.get(filen)));
+        index = 0;
     }
 
     //looks "i" characters ahead and returns that character
@@ -40,6 +49,11 @@ public class CodeHandler {
 
     //returns the rest of the document as a string
     String Remainder() {
-        return filecontent.substring(index, filecontent.length());
+        return filecontent.substring(index);
+    }
+
+    void setFileContent(String input)
+    {
+        filecontent = input + " ";
     }
 }
